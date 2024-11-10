@@ -101,11 +101,10 @@ int main(){
             }
         }
 
-
-        tempo_atual = uptime();
         printf("RODADA %d ======================\n", i);
 
         // VAZÃO
+        //ordenando vetor terminos
         for (int j = 0; j < 20; j++){
             for (int k = j+1; k < 20; k++){
                 if (terminos[k] < terminos[j]){
@@ -116,8 +115,8 @@ int main(){
             }
         }
 
-        int *vazoes = malloc(50 * sizeof(int));
-        for (int j = 0; j < 50; j++){
+        int *vazoes = malloc(120 * sizeof(int));
+        for (int j = 0; j < 120; j++){
             vazoes[j] = 0;
         }
         int index = 0;
@@ -142,7 +141,6 @@ int main(){
             if (vazoes[j] > vazao_max) {
                 vazao_max = vazoes[j];
             }
-            printf("vazoes[%d]: %d\n", j, vazoes[j]);
         }
 
         //normalizando
@@ -167,11 +165,11 @@ int main(){
         
         //lendo os dados da struct processo
 
-        int l = 0;           //graphs.c não gera métricas overhead
+        int l = 0;
         int eficiencia_atual;
         for (int k = 0; k < 20; k++){
-            eficiencia_atual = get_eficiencia(k);
-            if (eficiencia_atual >= 0 ){
+            eficiencia_atual = get_eficiencia(k); //graphs.c devolve um valor negativo,
+            if (eficiencia_atual >= 0 ){         //para que não impacte no cálculo
                 eficiencias[l] = eficiencia_atual;
                 l += 1;
             }
@@ -222,7 +220,7 @@ int main(){
         int overhead_min = 100000;
         int overhead_soma = 0;
         
-        for(int j = 0; j < Y; j ++){
+        for(int j = 0; j < 20; j ++){
             overhead_soma += overheads[j];
             if (overheads[j] < overhead_min){
                 overhead_min = overheads[j];
@@ -273,6 +271,7 @@ int main(){
         res = 1000 - (nominador * 1000 / denominador);
         int justica_norm = res % 1000;
         printf("justica normalizada: %de-03\n", justica_norm);
+        free(justicas);
 
         //DESEMPENHO
         int desempenho = (overhead_norm + eficiencia_norm + vazao_norm + justica_norm);
