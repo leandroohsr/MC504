@@ -1,6 +1,5 @@
 #include "kernel/types.h"
 #include "user/user.h"
-#include <stddef.h>
 #include "kernel/fcntl.h"
 
 #define max_iter 1000
@@ -47,9 +46,8 @@ int main(int agrc, char *argv[]){
     index += (argv[1][1] - '0');
 
     int t0, t1;
-    int index_overhead = 0;
-    int *overheads = malloc(500 * sizeof(int));
-
+    int tempo_overhead = 0;
+    
     for (int i = 0; i < max_iter; i++){
         //vertices de 100 a 200 e arestas de 50 a 400
         uint num_vertices = (rand() % 101) + 100;
@@ -58,14 +56,14 @@ int main(int agrc, char *argv[]){
         t0 = uptime();
         int **matrix = malloc(num_vertices * sizeof(int *));
         t1 = uptime();
-        overheads[index_overhead++] = t1 - t0;
+        tempo_overhead+= t1 - t0;
 
         //criar e zerar matrix
         for (int j = 0; j < num_vertices; j++){
             t0 = uptime();
             matrix[j] = malloc(num_vertices * sizeof(int));
             t1 = uptime();
-            overheads[index_overhead++] = t1 - t0;
+            tempo_overhead+= t1 - t0;
 
             for (int k = 0; k < num_vertices; k++){
                 matrix[j][k] = 0;
@@ -97,7 +95,7 @@ int main(int agrc, char *argv[]){
         t0 = uptime();
         int *fila = malloc(tam * sizeof(int));
         t1 = uptime();
-        overheads[index_overhead++] = t1 - t0;
+        tempo_overhead+= t1 - t0;
 
 
         for (int i = 0; i < 200; i++){
@@ -131,27 +129,22 @@ int main(int agrc, char *argv[]){
         t0 = uptime();
         free(fila);
         t1 = uptime();
-        overheads[index_overhead++] = t1 - t0;
+        tempo_overhead+= t1 - t0;
         for (int i = 0; i < num_vertices; i++) {
             t0 = uptime();
             free(matrix[i]); 
             t1 = uptime();
-            overheads[index_overhead++] = t1 - t0; 
+            tempo_overhead+= t1 - t0; 
         }
         t0 = uptime();
         free(matrix);
         t1 = uptime();
-        overheads[index_overhead++] = t1 - t0;
+        tempo_overhead+= t1 - t0;
 
-    }
-
-    int total_overhead = 0;
-    for (int i = 0; i < index_overhead; i++){
-        total_overhead += overheads[i];
     }
 
     increment_metric(index, -1, MODE_EFICIENCIA);
-    increment_metric(index, total_overhead, MODE_OVERHEAD);
+    increment_metric(index, tempo_overhead, MODE_OVERHEAD);
 
     int pid = getpid();
     set_justica(index, pid);
