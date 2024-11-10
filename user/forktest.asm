@@ -45,7 +45,7 @@ forktest(void)
 
   print("fork test\n");
   32:	00000517          	auipc	a0,0x0
-  36:	3d650513          	add	a0,a0,982 # 408 <increment_metric+0x8>
+  36:	3ee50513          	add	a0,a0,1006 # 420 <set_justica+0x8>
   3a:	fc7ff0ef          	jal	0 <print>
 
   for(n=0; n<N; n++){
@@ -67,7 +67,7 @@ forktest(void)
   if(n == N){
     print("fork claimed to work N times!\n");
   54:	00000517          	auipc	a0,0x0
-  58:	3c450513          	add	a0,a0,964 # 418 <increment_metric+0x18>
+  58:	3dc50513          	add	a0,a0,988 # 430 <set_justica+0x18>
   5c:	fa5ff0ef          	jal	0 <print>
     exit(1);
   60:	4505                	li	a0,1
@@ -104,7 +104,7 @@ forktest(void)
 
   print("fork test OK\n");
   90:	00000517          	auipc	a0,0x0
-  94:	3d850513          	add	a0,a0,984 # 468 <increment_metric+0x68>
+  94:	3f050513          	add	a0,a0,1008 # 480 <set_justica+0x68>
   98:	f69ff0ef          	jal	0 <print>
 }
   9c:	60e2                	ld	ra,24(sp)
@@ -115,14 +115,14 @@ forktest(void)
   a6:	8082                	ret
       print("wait stopped early\n");
   a8:	00000517          	auipc	a0,0x0
-  ac:	39050513          	add	a0,a0,912 # 438 <increment_metric+0x38>
+  ac:	3a850513          	add	a0,a0,936 # 450 <set_justica+0x38>
   b0:	f51ff0ef          	jal	0 <print>
       exit(1);
   b4:	4505                	li	a0,1
   b6:	292000ef          	jal	348 <exit>
     print("wait got too many\n");
   ba:	00000517          	auipc	a0,0x0
-  be:	39650513          	add	a0,a0,918 # 450 <increment_metric+0x50>
+  be:	3ae50513          	add	a0,a0,942 # 468 <set_justica+0x50>
   c2:	f3fff0ef          	jal	0 <print>
     exit(1);
   c6:	4505                	li	a0,1
@@ -800,7 +800,7 @@ tempo_total:
 .global get_eficiencia
 get_eficiencia:
  li a7, SYS_get_eficiencia
- 3f0:	48e1                	li	a7,24
+ 3f0:	48dd                	li	a7,23
  ecall
  3f2:	00000073          	ecall
  ret
@@ -810,7 +810,7 @@ get_eficiencia:
 .global get_overhead
 get_overhead:
  li a7, SYS_get_overhead
- 3f8:	48dd                	li	a7,23
+ 3f8:	48e1                	li	a7,24
  ecall
  3fa:	00000073          	ecall
  ret
@@ -825,3 +825,33 @@ increment_metric:
  402:	00000073          	ecall
  ret
  406:	8082                	ret
+
+0000000000000408 <initialize_metrics>:
+.global initialize_metrics
+initialize_metrics:
+ li a7, SYS_initialize_metrics
+ 408:	48e9                	li	a7,26
+ ecall
+ 40a:	00000073          	ecall
+ ret
+ 40e:	8082                	ret
+
+0000000000000410 <get_justica>:
+.global get_justica
+get_justica:
+ li a7, SYS_get_justica
+ 410:	48ed                	li	a7,27
+ ecall
+ 412:	00000073          	ecall
+ ret
+ 416:	8082                	ret
+
+0000000000000418 <set_justica>:
+.global set_justica
+set_justica:
+ li a7, SYS_set_justica
+ 418:	48f1                	li	a7,28
+ ecall
+ 41a:	00000073          	ecall
+ ret
+ 41e:	8082                	ret

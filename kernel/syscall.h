@@ -21,6 +21,9 @@
 #define SYS_mkdir  20
 #define SYS_close  21
 #define SYS_tempo_total 22
-#define SYS_get_overhead 23
-#define SYS_get_eficiencia 24
+#define SYS_get_eficiencia 23
+#define SYS_get_overhead 24
 #define SYS_increment_metric 25
+#define SYS_initialize_metrics 26
+#define SYS_get_justica 27
+#define SYS_set_justica 28

@@ -34,36 +34,11 @@ rand(void)
 int main(){
     //30 rodadas
     int  t0_rodada, tempo_atual;
-    char *args[3];
+    char *args[2];
+    int *processos = malloc(20 * sizeof(int));
 
-    int pipe_eficiencia[2];
-    int pipe_overhead[2];
-
-    pipe(pipe_eficiencia);
-    pipe(pipe_overhead);
-    
-    //PIPE: EFICIENCIA
-    int temp_int = pipe_eficiencia[1];
-    char temp_efici[10];
-    int i = 0;
-    do {
-        temp_efici[i++] = temp_int % 10 + '0';   // próximo digito
-    } while ((temp_int /= 10) > 0);
-    temp_efici[i] = '\0';
-    args[1] = temp_efici;
-
-    //PIPE: OVERHEAD
-    temp_int = pipe_overhead[1];
-    char temp_overh[10];
-    i = 0;
-    do {
-        temp_overh[i++] = temp_int % 10 + '0';   // próximo digito
-    } while ((temp_int /= 10) > 0);
-    temp_overh[i] = '\0';
-    args[2] = temp_overh;
-
-
-    for (i = 1; i <= 30; i++){
+    for (int i = 1; i <= 30; i++){
+        initialize_metrics();
         t0_rodada = uptime();
         uint X = (rand() % 9) + 6;
         uint Y = 20 - X;
@@ -71,6 +46,19 @@ int main(){
         int pid;
         int ret;
         for (int j = 1; j < 21; j++){
+            int index = j - 1;
+            char index_str[3];
+            if (index < 10) {
+                index_str[0] = '0';
+                index_str[1] = index + '0';
+                index_str[2] = '\0';
+            } else{
+                index_str[0] = '1';
+                index_str[1] = (index - 10) + '0';
+                index_str[2] = '\0';
+            }
+            
+            args[1] = index_str;
             if (j <= X){
                 //CPU-BOUND
                 args[0] = "graphs";
@@ -83,7 +71,7 @@ int main(){
                         exit(1);
                     }
                 } else {       //pai
-                    //processos[j-1] = pid;
+                    processos[j-1] = pid;
                 }
             } else {
                 //IO-BOUND
@@ -96,7 +84,7 @@ int main(){
                         exit(1);
                     }
                 } else {       //pai
-                    //processos[j-1] = pid;
+                    processos[j-1] = pid;
                 }
             }
         }
@@ -154,6 +142,7 @@ int main(){
             if (vazoes[j] > vazao_max) {
                 vazao_max = vazoes[j];
             }
+            printf("vazoes[%d]: %d\n", j, vazoes[j]);
         }
 
         //normalizando
@@ -168,27 +157,25 @@ int main(){
         int vazao_norm = res % 1000; //o valor é sempre de 0-1, não faz sentido pegar o valor maior e 1
         printf("vazao normalizada: %de-03\n", vazao_norm);
 
-
-        //ele perdia o valor de vazao_norm depois de ler o pipe, não sei o porque, mas ele n perde se for uma string
-        char vazao_str[10];
-        int k = 0;
-        do {
-            vazao_str[k++] = vazao_norm % 10 + '0';   // próximo digito
-        } while ((vazao_norm /= 10) > 0);
-        vazao_str[k] = '\0';
         free(terminos);
         free(vazoes);
         
 
-        // EFICIENCIA DO SISTEMA DE ARQUIVOS, lembrando que só IO-BOUND tem essa métrica
+        // EFICIENCIA DO SISTEMA DE ARQUIVOS
         int *eficiencias = malloc(Y * sizeof(int));
         
         
-        //lendo os dados do pipe
-        for (int j = 0; j < Y; j++){
-            read(pipe_eficiencia[0], &eficiencias[j], sizeof(int));
+        //lendo os dados da struct processo
+
+        int l = 0;           //graphs.c não gera métricas overhead
+        int eficiencia_atual;
+        for (int k = 0; k < 20; k++){
+            eficiencia_atual = get_eficiencia(k);
+            if (eficiencia_atual >= 0 ){
+                eficiencias[l] = eficiencia_atual;
+                l += 1;
+            }
         }
-        //close(pipe_eficiencia[0]);
         
         //pegando maximo e minimo
         int eficiencia_max = -10;
@@ -223,11 +210,12 @@ int main(){
         int *overheads = malloc(20 * sizeof(int));
         
 
-        //lendo os dados do pipe
-        for (int j = 0; j < Y; j++){
-            read(pipe_overhead[0], &overheads[j], sizeof(int));
+        //lendo os dados da struct do processo
+        int overhead_atual;
+        for (int k = 0; k < 20; k++){
+            overhead_atual = get_overhead(k);
+            overheads[k] = overhead_atual;
         }
-        //close(pipe_overhead[0]);
 
         //pegando maximo e minimo
         int overhead_max = -10;
@@ -244,7 +232,8 @@ int main(){
             }
         }
 
-        int overhead_media = (1000 * overhead_soma) / Y;
+        //normalizando
+        int overhead_media = (1000 * overhead_soma) / 20;
         overhead_max *= 1000;
         overhead_min *= 1000;
 
@@ -255,19 +244,40 @@ int main(){
         printf("overhead normalizado: %de-03\n", overhead_norm);
         free(overheads);
 
+        //JUSTIÇA
+        int *justicas = malloc(20 * sizeof(int));
+        //lendo do proc.c
+        for (int k = 0; k < 20; k++){
+            justicas[k] = get_justica(k);
+        }
+
+        //pegando máximo e mínimo
+        int justica_max = -10;
+        int justica_min = 100000;
+        int justica_soma = 0;
+        int justica_soma_quadrado = 0;
+        for (int k = 0; k < 20; k++){
+            justica_soma += justicas[k];
+            justica_soma_quadrado += justicas[k] * justicas[k];
+            if (justicas[k] < justica_min) {
+                justica_min = justicas[k];
+            }
+            if (justicas[k] > justica_max){
+                justica_max = justicas[k];
+            }
+        }
+
+        //normalizando
+        nominador = justica_soma * justica_soma;
+        denominador = 20 * justica_soma_quadrado;
+        res = 1000 - (nominador * 1000 / denominador);
+        int justica_norm = res % 1000;
+        printf("justica normalizada: %de-03\n", justica_norm);
 
         //DESEMPENHO
-        //recuperando vazao_norm pela string
-        vazao_norm = 0;
-        vazao_norm += vazao_str[0] - '0';
-        vazao_norm += 10*(vazao_str[1] - '0');
-        vazao_norm += 100*(vazao_str[2] - '0');
-
-        int justica_norm = 1000;
         int desempenho = (overhead_norm + eficiencia_norm + vazao_norm + justica_norm);
         desempenho = desempenho >> 2;
         printf("desempenho: %de-03\n", desempenho);
-
     }
     return 0;
 }

@@ -40,7 +40,12 @@ void generate_random_edge(int **matrix, int num_vertices, int *vert1, int *vert2
 }
 
 
-int main(){
+int main(int agrc, char *argv[]){
+
+    int index = 0;
+    index += (argv[1][0] - '0') * 10;
+    index += (argv[1][1] - '0');
+
     for (int i = 0; i < max_iter; i++){
         //vertices de 100 a 200 e arestas de 50 a 400
         uint num_vertices = (rand() % 101) + 100;
@@ -115,13 +120,12 @@ int main(){
         free(matrix);
 
     }
+    
+    increment_metric(index, -1, MODE_EFICIENCIA);
+    increment_metric(index, 123, MODE_OVERHEAD);
+
     int pid = getpid();
-    // int runtime = tempo_total(pid);
-    // printf("Tempo de execução do processo %d: %d\n", pid, runtime);
+    set_justica(index, pid);
 
-    int i = increment_metric(pid, 27, MODE_EFICIENCIA);
-    int a = get_eficiencia(pid);
-
-    printf("%d Eficiencia %d\n", i, a);
     return 0;
 }

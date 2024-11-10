@@ -40,3 +40,6 @@ entry("tempo_total");
 entry("get_eficiencia");
 entry("get_overhead");
 entry("increment_metric");
+entry("initialize_metrics");
+entry("get_justica");
+entry("set_justica");

@@ -101,11 +101,13 @@ extern uint64 sys_unlink(void);
 extern uint64 sys_link(void);
 extern uint64 sys_mkdir(void);
 extern uint64 sys_close(void);
-
 extern uint64 sys_tempo_total(void); 
 extern uint64 sys_get_eficiencia(void);
 extern uint64 sys_get_overhead(void);
 extern uint64 sys_increment_metric(void); 
+extern uint64 sys_initialize_metrics(void);
+extern uint64 sys_get_justica(void);
+extern uint64 sys_set_justica(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -134,7 +136,10 @@ static uint64 (*syscalls[])(void) = {
 [SYS_tempo_total] sys_tempo_total,
 [SYS_get_eficiencia] sys_get_eficiencia,
 [SYS_get_overhead] sys_get_overhead,
-[SYS_increment_metric] sys_increment_metric
+[SYS_increment_metric] sys_increment_metric,
+[SYS_initialize_metrics] sys_initialize_metrics,
+[SYS_get_justica] sys_get_justica,
+[SYS_set_justica] sys_set_justica
 };
 
 void

@@ -125,3 +125,18 @@ increment_metric:
  li a7, SYS_increment_metric
  ecall
  ret
+.global initialize_metrics
+initialize_metrics:
+ li a7, SYS_initialize_metrics
+ ecall
+ ret
+.global get_justica
+get_justica:
+ li a7, SYS_get_justica
+ ecall
+ ret
+.global set_justica
+set_justica:
+ li a7, SYS_set_justica
+ ecall
+ ret

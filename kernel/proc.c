@@ -7,6 +7,10 @@
 #include "defs.h"
 #include "fcntl.h"
 
+int overheads[20];
+int eficiencias[20];
+int justicas[20];
+
 struct cpu cpus[NCPU];
 
 struct proc proc[NPROC];
@@ -440,6 +444,15 @@ wait(uint64 addr)
   }
 }
 
+uint64
+sys_uptime2(void)
+{
+  uint xticks;
+
+  xticks = ticks;
+  return xticks;
+}
+
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
 // Scheduler never returns.  It loops, doing:
@@ -464,7 +477,7 @@ scheduler(void)
     for(p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
       if(p->state == RUNNABLE) {
-        uint tempo_inicio = r_time();
+        uint tempo_inicio = sys_uptime2();
         // Switch to chosen process.  It is the process's job
         // to release its lock and then reacquire it
         // before jumping back to us.
@@ -472,7 +485,7 @@ scheduler(void)
         c->proc = p;
         swtch(&c->context, &p->context);
 
-        uint tempo_final = r_time();
+        uint tempo_final = sys_uptime2();
         p->tempo_total += tempo_final - tempo_inicio;
         // Process is done running for now.
         // It should have changed its p->state before coming back.
@@ -725,54 +738,65 @@ int sys_tempo_total(void){
 
 
 int sys_get_overhead(void){
-  int pid;
-  struct proc *p;
+  int index;
 
-  argint(0, &pid);
-  for(p = proc; p < &proc[NPROC]; p++) {
-    if(p->pid == pid) {
-        return p->overhead;
-    }
-  }
-
-  return -1;
-
+  argint(0, &index);
+  return overheads[index];
 }
 
 
 int sys_get_eficiencia(void){
-  int pid;
-  struct proc *p;
+  int index;
+  
+  argint(0, &index);
+  return eficiencias[index];
+}
 
-  argint(0, &pid);
-  for(p = proc; p < &proc[NPROC]; p++) {
-    if(p->pid == pid) {
-        return p->eficiencia;
-    }
+int sys_increment_metric(void){
+  int index, amount, mode;
+
+  argint(0, &index);
+  argint(1, &amount);
+  argint(2, &mode);
+
+  if (mode == MODE_OVERHEAD){
+    overheads[index] += amount;
+    return 0;
+  } else if (mode == MODE_EFICIENCIA) {
+    eficiencias[index] += amount;
+    return 0;
   }
 
   return -1;
 
 }
 
-int sys_increment_metric(void){
-  int pid, amount, mode;
+int sys_initialize_metrics(void){
+  for (int k = 0; k < 20; k++){
+    overheads[k] = 0;
+    eficiencias[k] = 0;
+    justicas[k] = 0;
+  }
+  return 0;
+}
+
+int sys_get_justica(void){
+  int index;
+  argint(0, &index);
+  return justicas[index];
+}
+
+int sys_set_justica(void){
+  int index, pid;
   struct proc *p;
 
-  argint(0, &pid);
-  argint(1, &amount);
-  argint(2, &mode);
+  argint(0, &index);
+  argint(1, &pid);
 
   for(p = proc; p < &proc[NPROC]; p++) {
     if(p->pid == pid) {
-        if(mode == MODE_OVERHEAD){
-          p->overhead += amount;
-        } else if(mode == MODE_EFICIENCIA) {
-          p->eficiencia += amount;
-        }
+        justicas[index] = p->tempo_total;
     }
   }
-
-  return -1;
-
+  return 0;
 }

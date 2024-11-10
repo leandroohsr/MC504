@@ -31,11 +31,9 @@ rand(void)
 int main(int agrc, char *argv[]){
     int t0, t1;
 
-    char *buff_eficiencia = argv[1];
-    char *buff_overhead = argv[2];
-
-    int fd_eficiencia = atoi(buff_eficiencia);
-    int fd_overhead = atoi(buff_overhead);
+    int index = 0;
+    index += (argv[1][0] - '0') * 10;
+    index += (argv[1][1] - '0');
 
     int index_eficiencia = 0, index_overhead = 0;
     int *eficiencias = malloc(500 * sizeof(int));
@@ -213,15 +211,12 @@ int main(int agrc, char *argv[]){
         total_overhead += overheads[i];
     }
 
-    write(fd_eficiencia, &total_eficiencia, sizeof(int));
-    write(fd_overhead, &total_overhead, sizeof(int));
+
+    increment_metric(index, total_eficiencia, MODE_EFICIENCIA);
+    increment_metric(index, total_overhead, MODE_OVERHEAD);
 
     pid = getpid();
-    // int runtime = tempo_total(pid);
-    // printf("Tempo de execução do processo %d: %d\n", pid, runtime);
-
-    // int eficiencia = get_eficiencia(pid);
-    // printf("Eficiência do processo %d: %d\n", pid, eficiencia);
+    set_justica(index, pid);
 
     return 0;
 }

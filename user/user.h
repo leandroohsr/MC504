@@ -23,9 +23,12 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int tempo_total(int);
-int get_overhead(int);
 int get_eficiencia(int);
+int get_overhead(int);
 int increment_metric(int, int, int);
+int initialize_metrics(void);
+int get_justica(int);
+int set_justica(int, int);
 
 // ulib.c
 int stat(const char*, struct stat*);
