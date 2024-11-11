@@ -30,14 +30,12 @@ rand(void)
 
 int main(int agrc, char *argv[]){
     int t0, t1;
+    int total_eficiencia = 0, total_overhead = 0;
+
 
     int index = 0;
     index += (argv[1][0] - '0') * 10;
     index += (argv[1][1] - '0');
-
-    int index_eficiencia = 0, index_overhead = 0;
-    int *eficiencias = malloc(500 * sizeof(int));
-    int *overheads = malloc(500 * sizeof(int));
 
     int fd;
     char filename[20] = "iobound";
@@ -75,7 +73,7 @@ int main(int agrc, char *argv[]){
     t0 = uptime();
     fd = open(filename, O_CREATE | O_RDWR);
     t1 = uptime();
-    overheads[index_overhead++] = t1 - t0;
+    total_overhead += t1 - t0;
 
     if (fd < 0){
         printf("erro ao criar o arquivo %s\n", filename);
@@ -86,8 +84,8 @@ int main(int agrc, char *argv[]){
     char linha[101];
     linha[100] = '\n';
     int size = 101;
-    for(i=0;i<100;i++){ //escreve as linhas
-        for(int j=0;j<100;j++){ //escreve os caracteres
+    for(i=0;i<100;i++){ //lines
+        for(int j=0;j<100;j++){ //characters
             int c = rand() % 70;
             linha[j] = caracteres[c];
         }
@@ -95,9 +93,9 @@ int main(int agrc, char *argv[]){
         if(write(fd, linha, size) != size){
             printf("error, write failed\n");
             exit(1);
-        } else {  //a escrita deu certo
+        } else {  //wrote succesfully
             t1 = uptime();
-            eficiencias[index_eficiencia++] = t1 - t0;
+            total_eficiencia += t1 - t0;
         }
     }
     close(fd);
@@ -107,15 +105,15 @@ int main(int agrc, char *argv[]){
     char *linhas[100];
     for (int j = 0; j < 100; j++) {
         t0 = uptime();
-        linhas[j] = malloc(102 * sizeof(char)); // Allocate memory for each string
+        linhas[j] = malloc(102 * sizeof(char)); // allocate memory for each string
         t1 = uptime();
-        overheads[index_overhead++] = t1 - t0;
+        total_overhead += t1 - t0;
     }
 
     t0 = uptime();
     fd = open(filename, O_RDONLY);
     t1 = uptime();
-    overheads[index_overhead++] = t1 - t0;
+    total_overhead += t1 - t0;
     if (fd < 0) {
         printf("Erro ao abrir o arquivo %s\n", filename);
         exit(1);
@@ -127,7 +125,7 @@ int main(int agrc, char *argv[]){
     t0 = uptime();
     while((n = read(fd, buf, sizeof(buf))) > 0) {
         t1 = uptime();
-        eficiencias[index_eficiencia++] = t1 - t0;
+        total_eficiencia += t1 - t0;
         strcpy(linhas[i], buf);
         i++;
         t0 = uptime();
@@ -140,7 +138,7 @@ int main(int agrc, char *argv[]){
     t0 = uptime();
     tmp = malloc(102*sizeof(char));
     t1 = uptime();
-    overheads[index_overhead++] = t1 - t0;
+    total_overhead += t1 - t0;
 
     for (i = 0; i < 50; i++){
         //getting random rows
@@ -155,13 +153,13 @@ int main(int agrc, char *argv[]){
     t0 = uptime();
     free(tmp);
     t1 = uptime();
-    overheads[index_overhead++] = t1 - t0;
+    total_overhead += t1 - t0;
 
     //rewriting file after permutations
     t0 = uptime();
     fd = open(filename, O_RDWR);
     t1 = uptime();
-    overheads[index_overhead++] = t1 - t0;
+    total_overhead += t1 - t0;
     if (fd < 0) {
         printf("Erro ao reabrir o arquivo %s para escrever as permutações\n", filename);
         exit(1);
@@ -175,7 +173,7 @@ int main(int agrc, char *argv[]){
             exit(1);
         } else {
             t1 = uptime();
-            eficiencias[index_eficiencia++] = t1 - t0;
+            total_eficiencia += t1 - t0;
         }
     }
 
@@ -188,7 +186,7 @@ int main(int agrc, char *argv[]){
         exit(1);
     } else {
         t1 = uptime();
-        eficiencias[index_eficiencia++] = t1 - t0;
+        total_eficiencia += t1 - t0;
     }
 
 
@@ -197,18 +195,7 @@ int main(int agrc, char *argv[]){
         t0 = uptime();
         free(linhas[j]);
         t1 = uptime();
-        overheads[index_overhead++] = t1 - t0;
-    }
-
-    int total_eficiencia = 0, total_overhead = 0;
-
-
-    //soma das métricas
-    for (int i = 0; i < index_eficiencia; i++){
-        total_eficiencia += eficiencias[i];
-    }
-    for (int i = 0; i < index_overhead; i++){
-        total_overhead += overheads[i];
+        total_overhead += t1 - t0;
     }
 
 
