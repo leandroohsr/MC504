@@ -144,16 +144,16 @@ int main(){
         }
 
         //normalizando
-        int vazao_media = (20 * 1000) / lim;
-        vazao_max *= 1000;
-        vazao_min *= 1000;
+        int vazao_media = (20 * 100000) / lim;
+        vazao_max *= 100000;
+        vazao_min *= 100000;
 
         int nominador = vazao_media - vazao_min;
         int denominador = vazao_max - vazao_min; //é possível, por azar, isso ser zero
 
-        int res = 1000 - (nominador * 1000 / denominador);
-        int vazao_norm = res % 1000; //o valor é sempre de 0-1, não faz sentido pegar o valor maior e 1
-        printf("vazao normalizada: %de-03\n", vazao_norm);
+        long long res = 100000 - (nominador * 100000 / denominador);
+        int vazao_norm = res % 100000;
+        printf("vazao normalizada: %de-05\n", vazao_norm);
 
         free(terminos);
         free(vazoes);
@@ -175,32 +175,17 @@ int main(){
             }
         }
         
-        //pegando maximo e minimo
-        int eficiencia_max = -10;
-        int eficiencia_min = 100000;
+        //somando
         int eficiencia_soma = 0;
         
         for(int j = 0; j < Y; j ++){
             eficiencia_soma += eficiencias[j];
-            if (eficiencias[j] < eficiencia_min){
-                eficiencia_min = eficiencias[j];
-            }
-            if (eficiencias[j] > eficiencia_max) {
-                eficiencia_max = eficiencias[j];
-            }
         }
 
-        //normalizando
-        int eficiencia_media = (1000 * eficiencia_soma) / Y;
-        eficiencia_max *= 1000;
-        eficiencia_min *= 1000;
-
-        nominador = eficiencia_media - eficiencia_min;
-        denominador = eficiencia_max - eficiencia_min;
-        
-        res = 1000 - (nominador * 1000 / denominador);
-        int eficiencia_norm = res % 1000;
-        printf("eficiencia normalizada: %de-03\n", eficiencia_norm);
+        //invertendo
+        res = 100000 / eficiencia_soma;
+        int eficiencia_fim = res;
+        printf("eficiencia normalizada: %de-05\n", eficiencia_fim);
         free(eficiencias);
 
 
@@ -215,68 +200,48 @@ int main(){
             overheads[k] = overhead_atual;
         }
 
-        //pegando maximo e minimo
-        int overhead_max = -10;
-        int overhead_min = 100000;
+
         int overhead_soma = 0;
         
         for(int j = 0; j < 20; j ++){
             overhead_soma += overheads[j];
-            if (overheads[j] < overhead_min){
-                overhead_min = overheads[j];
-            }
-            if (overheads[j] > overhead_max) {
-                overhead_max = overheads[j];
-            }
         }
 
-        //normalizando
-        int overhead_media = (1000 * overhead_soma) / 20;
-        overhead_max *= 1000;
-        overhead_min *= 1000;
-
-        nominador = overhead_media - overhead_min;
-        denominador = overhead_max - overhead_min;
-        res = 1000 - (nominador * 1000 / denominador);
-        int overhead_norm = res % 1000;
-        printf("overhead normalizado: %de-03\n", overhead_norm);
+        //invertendo
+        res = (100000 / overhead_soma);
+        int overhead_fim = res;
+        printf("overhead final: %de-05\n", overhead_fim);
         free(overheads);
 
         //JUSTIÇA
         int *justicas = malloc(20 * sizeof(int));
+
         //lendo do proc.c
         for (int k = 0; k < 20; k++){
             justicas[k] = get_justica(k);
         }
 
-        //pegando máximo e mínimo
-        int justica_max = -10;
-        int justica_min = 100000;
-        int justica_soma = 0;
-        int justica_soma_quadrado = 0;
+        //somando
+        long long justica_soma = 0; 
+        long long justica_soma_quadrado = 0;
         for (int k = 0; k < 20; k++){
             justica_soma += justicas[k];
             justica_soma_quadrado += justicas[k] * justicas[k];
-            if (justicas[k] < justica_min) {
-                justica_min = justicas[k];
-            }
-            if (justicas[k] > justica_max){
-                justica_max = justicas[k];
-            }
         }
 
         //normalizando
-        nominador = justica_soma * justica_soma;
-        denominador = 20 * justica_soma_quadrado;
-        res = 1000 - (nominador * 1000 / denominador);
-        int justica_norm = res % 1000;
-        printf("justica normalizada: %de-03\n", justica_norm);
+        long long nominador2 = justica_soma * justica_soma;
+        long long denominador2 = 20 * justica_soma_quadrado;
+        printf("nominador: %lld | denominador: %lld\n", nominador2, denominador2);
+        res = (nominador2 * 100000) / denominador2;
+        int justica_fim = res;
+        printf("justica_fim: %de-05\n", justica_fim);
         free(justicas);
 
         //DESEMPENHO
-        int desempenho = (overhead_norm + eficiencia_norm + vazao_norm + justica_norm);
+        int desempenho = (overhead_fim + eficiencia_fim + vazao_norm + justica_fim);
         desempenho = desempenho >> 2;
-        printf("desempenho: %de-03\n", desempenho);
+        printf("desempenho: %de-05\n", desempenho);
     }
     return 0;
 }
