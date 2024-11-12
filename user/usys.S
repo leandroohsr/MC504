@@ -140,3 +140,8 @@ set_justica:
  li a7, SYS_set_justica
  ecall
  ret
+.global uptime_nolock
+uptime_nolock:
+ li a7, SYS_uptime_nolock
+ ecall
+ ret

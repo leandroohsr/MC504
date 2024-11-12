@@ -445,7 +445,7 @@ wait(uint64 addr)
 }
 
 uint64
-sys_uptime2(void)
+sys_uptime_nolock(void)
 {
   uint xticks;
 
@@ -477,7 +477,7 @@ scheduler(void)
     for(p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
       if(p->state == RUNNABLE) {
-        uint tempo_inicio = sys_uptime2();
+        uint tempo_inicio = sys_uptime_nolock();
         // Switch to chosen process.  It is the process's job
         // to release its lock and then reacquire it
         // before jumping back to us.
@@ -485,7 +485,7 @@ scheduler(void)
         c->proc = p;
         swtch(&c->context, &p->context);
 
-        uint tempo_final = sys_uptime2();
+        uint tempo_final = sys_uptime_nolock();
         p->tempo_total += tempo_final - tempo_inicio;
         // Process is done running for now.
         // It should have changed its p->state before coming back.

@@ -70,9 +70,9 @@ int main(int agrc, char *argv[]){
     }
     filename[i] = '\0';
 
-    t0 = uptime();
+    t0 = uptime_nolock();
     fd = open(filename, O_CREATE | O_RDWR);
-    t1 = uptime();
+    t1 = uptime_nolock();
     total_overhead += t1 - t0;
 
     if (fd < 0){
@@ -89,12 +89,12 @@ int main(int agrc, char *argv[]){
             int c = rand() % 70;
             linha[j] = caracteres[c];
         }
-        t0 = uptime();
+        t0 = uptime_nolock();
         if(write(fd, linha, size) != size){
             printf("error, write failed\n");
             exit(1);
         } else {  //wrote succesfully
-            t1 = uptime();
+            t1 = uptime_nolock();
             total_eficiencia += t1 - t0;
         }
     }
@@ -104,15 +104,15 @@ int main(int agrc, char *argv[]){
 
     char *linhas[100];
     for (int j = 0; j < 100; j++) {
-        t0 = uptime();
+        t0 = uptime_nolock();
         linhas[j] = malloc(102 * sizeof(char)); // allocate memory for each string
-        t1 = uptime();
+        t1 = uptime_nolock();
         total_overhead += t1 - t0;
     }
 
-    t0 = uptime();
+    t0 = uptime_nolock();
     fd = open(filename, O_RDONLY);
-    t1 = uptime();
+    t1 = uptime_nolock();
     total_overhead += t1 - t0;
     if (fd < 0) {
         printf("Erro ao abrir o arquivo %s\n", filename);
@@ -122,22 +122,22 @@ int main(int agrc, char *argv[]){
     char buf[101];
     int n;
     i = 0;
-    t0 = uptime();
+    t0 = uptime_nolock();
     while((n = read(fd, buf, sizeof(buf))) > 0) {
-        t1 = uptime();
+        t1 = uptime_nolock();
         total_eficiencia += t1 - t0;
         strcpy(linhas[i], buf);
         i++;
-        t0 = uptime();
+        t0 = uptime_nolock();
     }
 
     close(fd);
 
 
     char *tmp;
-    t0 = uptime();
+    t0 = uptime_nolock();
     tmp = malloc(102*sizeof(char));
-    t1 = uptime();
+    t1 = uptime_nolock();
     total_overhead += t1 - t0;
 
     for (i = 0; i < 50; i++){
@@ -150,15 +150,15 @@ int main(int agrc, char *argv[]){
         strcpy(linhas[row1], linhas[row2]);
         strcpy(linhas[row2], tmp);
     }
-    t0 = uptime();
+    t0 = uptime_nolock();
     free(tmp);
-    t1 = uptime();
+    t1 = uptime_nolock();
     total_overhead += t1 - t0;
 
     //rewriting file after permutations
-    t0 = uptime();
+    t0 = uptime_nolock();
     fd = open(filename, O_RDWR);
-    t1 = uptime();
+    t1 = uptime_nolock();
     total_overhead += t1 - t0;
     if (fd < 0) {
         printf("Erro ao reabrir o arquivo %s para escrever as permutações\n", filename);
@@ -167,12 +167,12 @@ int main(int agrc, char *argv[]){
 
     size = 101;
     for (int i = 0; i < 100; i++){
-        t0 = uptime();
+        t0 = uptime_nolock();
         if(write(fd, linhas[i], size) != size){
             printf("error, write permut failed\n");
             exit(1);
         } else {
-            t1 = uptime();
+            t1 = uptime_nolock();
             total_eficiencia += t1 - t0;
         }
     }
@@ -180,21 +180,21 @@ int main(int agrc, char *argv[]){
     close(fd);
 
     //removing file
-    t0 = uptime();
+    t0 = uptime_nolock();
     if (unlink(filename) < 0){
         printf("Erro ao remover o arquivo\n");
         exit(1);
     } else {
-        t1 = uptime();
+        t1 = uptime_nolock();
         total_eficiencia += t1 - t0;
     }
 
 
     //free malloc for linhas
     for (int j = 0; j < 100; j++) {
-        t0 = uptime();
+        t0 = uptime_nolock();
         free(linhas[j]);
-        t1 = uptime();
+        t1 = uptime_nolock();
         total_overhead += t1 - t0;
     }
 

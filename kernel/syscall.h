@@ -27,3 +27,4 @@
 #define SYS_initialize_metrics 26
 #define SYS_get_justica 27
 #define SYS_set_justica 28
+#define SYS_uptime_nolock 29

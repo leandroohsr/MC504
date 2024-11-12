@@ -53,16 +53,16 @@ int main(int agrc, char *argv[]){
         uint num_vertices = (rand() % 101) + 100;
         int num_edges = (rand() % 351) + 50;
 
-        t0 = uptime();
+        t0 = uptime_nolock();
         int **matrix = malloc(num_vertices * sizeof(int *));
-        t1 = uptime();
+        t1 = uptime_nolock();
         tempo_overhead+= t1 - t0;
 
         //criar e zerar matrix
         for (int j = 0; j < num_vertices; j++){
-            t0 = uptime();
+            t0 = uptime_nolock();
             matrix[j] = malloc(num_vertices * sizeof(int));
-            t1 = uptime();
+            t1 = uptime_nolock();
             tempo_overhead+= t1 - t0;
 
             for (int k = 0; k < num_vertices; k++){
@@ -92,9 +92,9 @@ int main(int agrc, char *argv[]){
         // //buscando caminho mínimo
         int visitado[MAX_VERT];
         int tam = 2*MAX_VERT;
-        t0 = uptime();
+        t0 = uptime_nolock();
         int *fila = malloc(tam * sizeof(int));
-        t1 = uptime();
+        t1 = uptime_nolock();
         tempo_overhead+= t1 - t0;
 
 
@@ -126,19 +126,19 @@ int main(int agrc, char *argv[]){
         }
 
         //libera a matrix
-        t0 = uptime();
+        t0 = uptime_nolock();
         free(fila);
-        t1 = uptime();
+        t1 = uptime_nolock();
         tempo_overhead+= t1 - t0;
         for (int i = 0; i < num_vertices; i++) {
-            t0 = uptime();
+            t0 = uptime_nolock();
             free(matrix[i]); 
-            t1 = uptime();
+            t1 = uptime_nolock();
             tempo_overhead+= t1 - t0; 
         }
-        t0 = uptime();
+        t0 = uptime_nolock();
         free(matrix);
-        t1 = uptime();
+        t1 = uptime_nolock();
         tempo_overhead+= t1 - t0;
 
     }
