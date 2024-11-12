@@ -29,6 +29,7 @@ int increment_metric(int, int, int);
 int initialize_metrics(void);
 int get_justica(int);
 int set_justica(int, int);
+int uptime_nolock(void);
 
 // ulib.c
 int stat(const char*, struct stat*);

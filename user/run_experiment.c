@@ -39,7 +39,7 @@ int main(){
 
     for (int i = 1; i <= 30; i++){
         initialize_metrics();
-        t0_rodada = uptime();
+        t0_rodada = uptime_nolock();
         uint X = (rand() % 9) + 6;
         uint Y = 20 - X;
         //int processos[20];
@@ -96,7 +96,7 @@ int main(){
             if (proc == -1){
                 printf("pocesso falhou");
             } else {
-                tempo_atual = uptime();
+                tempo_atual = uptime_nolock();
                 terminos[j] = (tempo_atual - t0_rodada);
             }
         }
