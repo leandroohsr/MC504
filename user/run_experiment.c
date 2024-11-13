@@ -33,7 +33,7 @@ rand(void)
 
 int main(){
     //30 rodadas
-    int  t0_rodada, tempo_atual;
+    int  t0_rodada, tempo_atual, t0_total = uptime_nolock();
     char *args[2];
     int *processos = malloc(20 * sizeof(int));
 
@@ -232,7 +232,6 @@ int main(){
         //normalizando
         long long nominador2 = justica_soma * justica_soma;
         long long denominador2 = 20 * justica_soma_quadrado;
-        printf("nominador: %lld | denominador: %lld\n", nominador2, denominador2);
         res = (nominador2 * 100000) / denominador2;
         int justica_fim = res;
         printf("justica_fim: %de-05\n", justica_fim);
@@ -243,5 +242,9 @@ int main(){
         desempenho = desempenho >> 2;
         printf("desempenho: %de-05\n", desempenho);
     }
+
+    int t_final = uptime_nolock();
+    int variação_total = t_final - t0_total;
+    printf("Tempo total usado para as 30 rodadas: %d\n", variação_total);
     return 0;
 }
