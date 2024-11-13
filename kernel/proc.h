@@ -108,5 +108,6 @@ struct proc {
   int tempo_total;
   int overhead;
   int eficiencia;
+  int type;
   
 };

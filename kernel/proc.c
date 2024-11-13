@@ -135,6 +135,9 @@ found:
   p->overhead = 0;
   p->eficiencia = 0;
 
+  //Inicializar tipo para default
+  p->type = DEFAULT;
+
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
     freeproc(p);
@@ -453,6 +456,36 @@ sys_uptime_nolock(void)
   return xticks;
 }
 
+
+//SCHEDULER FROM BEFORE, TO CHECK IT IF NECESSARY
+//     for(p = proc; p < &proc[NPROC]; p++) {
+//       acquire(&p->lock);
+//       if(p->state == RUNNABLE) {
+//         if (p->type == CPU_BOUND && !cpu_proc){
+//           cpu_proc = p;
+//         } else if (p-> type == IO_BOUND && !io_proc) {
+//           io_proc = p;
+//         } else if (p->type == DEFAULT && !default_proc){
+//           default_proc = p;
+//         }
+//         uint tempo_inicio = sys_uptime_nolock();
+//         // Switch to chosen process.  It is the process's job
+//         // to release its lock and then reacquire it
+//         // before jumping back to us.
+//         p->state = RUNNING;
+//         c->proc = p;
+//         swtch(&c->context, &p->context);
+
+//         uint tempo_final = sys_uptime_nolock();
+//         p->tempo_total += tempo_final - tempo_inicio;
+//         // Process is done running for now.
+//         // It should have changed its p->state before coming back.
+//         c->proc = 0;
+//         found = 1;
+//       }
+//       release(&p->lock);
+//     }
+
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
 // Scheduler never returns.  It loops, doing:
@@ -473,28 +506,45 @@ scheduler(void)
     // processes are waiting.
     intr_on();
 
-    int found = 0;
+    struct proc *cpu_proc = 0;
+    struct proc *io_proc = 0;
+    struct proc *default_proc = 0;
+
     for(p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
       if(p->state == RUNNABLE) {
-        uint tempo_inicio = sys_uptime_nolock();
-        // Switch to chosen process.  It is the process's job
-        // to release its lock and then reacquire it
-        // before jumping back to us.
-        p->state = RUNNING;
-        c->proc = p;
-        swtch(&c->context, &p->context);
-
-        uint tempo_final = sys_uptime_nolock();
-        p->tempo_total += tempo_final - tempo_inicio;
-        // Process is done running for now.
-        // It should have changed its p->state before coming back.
-        c->proc = 0;
-        found = 1;
+        if (p->type == CPU_BOUND && !cpu_proc){
+          cpu_proc = p;
+        } else if (p-> type == IO_BOUND && !io_proc) {
+          io_proc = p;
+        } else if (p->type == DEFAULT && !default_proc){
+          default_proc = p;
+        }
       }
       release(&p->lock);
     }
-    if(found == 0) {
+    struct proc *run_proc = 0;
+    if (cpu_proc || io_proc){
+      run_proc = io_proc ? io_proc : cpu_proc; //prioritizes IO
+    } else {
+      run_proc = default_proc;
+    }
+
+    //IO, CPU or DEFAULT to run
+    if (run_proc){
+      acquire(&run_proc->lock);
+      while (run_proc->state == RUNNABLE){
+        uint tempo_inicio = sys_uptime_nolock();
+        run_proc->state = RUNNING;
+        c->proc = run_proc;
+        swtch(&c->context, &run_proc->context);
+
+        uint tempo_final = sys_uptime_nolock();
+        run_proc->tempo_total += tempo_final - tempo_inicio;
+        c->proc = 0;
+      }
+      release(&run_proc->lock);
+    } else {
       // nothing to run; stop running on this core until an interrupt.
       intr_on();
       asm volatile("wfi");
@@ -796,7 +846,23 @@ int sys_set_justica(void){
   for(p = proc; p < &proc[NPROC]; p++) {
     if(p->pid == pid) {
         justicas[index] = p->tempo_total;
+        return 0;
     }
   }
-  return 0;
+  return -1;
+}
+
+int sys_set_type(void){
+  int type, pid;
+  struct proc *p;
+  argint(0, &type);
+  argint(1, &pid);
+
+  for(p = proc; p < &proc[NPROC]; p++) {
+    if(p->pid == pid) {
+        p->type = type;
+        return 0;
+    }
+  }
+  return -1;
 }

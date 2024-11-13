@@ -44,3 +44,4 @@ entry("initialize_metrics");
 entry("get_justica");
 entry("set_justica");
 entry("uptime_nolock");
+entry("set_type");

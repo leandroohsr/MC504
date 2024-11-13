@@ -6,3 +6,8 @@
 #define MODE_EFICIENCIA 10
 #define MODE_OVERHEAD 8
 
+//process types
+#define DEFAULT 1
+#define CPU_BOUND 2
+#define IO_BOUND 3
+
