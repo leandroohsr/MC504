@@ -152,7 +152,6 @@ int main(){
         long long res = 100000 - (nominador * 100000 / denominador);
         int vazao_norm = res;
         printf("vazao normalizada: %de-05\n", vazao_norm);
-        printf("media: %lld\n", vazao_media);
 
         free(terminos);
         free(vazoes);
