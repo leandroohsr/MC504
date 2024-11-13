@@ -115,8 +115,8 @@ int main(){
             }
         }
 
-        int *vazoes = malloc(120 * sizeof(int));
-        for (int j = 0; j < 120; j++){
+        int *vazoes = malloc(300 * sizeof(int));
+        for (int j = 0; j < 300; j++){
             vazoes[j] = 0;
         }
         int index = 0;
@@ -185,7 +185,7 @@ int main(){
         //invertendo
         res = 100000 / eficiencia_soma;
         int eficiencia_fim = res;
-        printf("eficiencia normalizada: %de-05\n", eficiencia_fim);
+        printf("eficiencia: %de-05\n", eficiencia_fim);
         free(eficiencias);
 
 
@@ -210,7 +210,7 @@ int main(){
         //invertendo
         res = (100000 / overhead_soma);
         int overhead_fim = res;
-        printf("overhead final: %de-05\n", overhead_fim);
+        printf("overhead: %de-05\n", overhead_fim);
         free(overheads);
 
         //JUSTIÇA
@@ -234,7 +234,7 @@ int main(){
         long long denominador2 = 20 * justica_soma_quadrado;
         res = (nominador2 * 100000) / denominador2;
         int justica_fim = res;
-        printf("justica_fim: %de-05\n", justica_fim);
+        printf("justica : %de-05\n", justica_fim);
         free(justicas);
 
         //DESEMPENHO

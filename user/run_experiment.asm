@@ -274,18 +274,18 @@ int main(){
  1f4:	969a                	add	a3,a3,t1
  1f6:	87ae                	mv	a5,a1
  1f8:	bfc1                	j	1c8 <main+0x154>
-        int *vazoes = malloc(120 * sizeof(int));
- 1fa:	1e000513          	li	a0,480
+        int *vazoes = malloc(300 * sizeof(int));
+ 1fa:	4b000513          	li	a0,1200
  1fe:	21b000ef          	jal	c18 <malloc>
  202:	84aa                	mv	s1,a0
-        for (int j = 0; j < 120; j++){
+        for (int j = 0; j < 300; j++){
  204:	86aa                	mv	a3,a0
- 206:	1e050713          	add	a4,a0,480
-        int *vazoes = malloc(120 * sizeof(int));
+ 206:	4b050713          	add	a4,a0,1200
+        int *vazoes = malloc(300 * sizeof(int));
  20a:	87aa                	mv	a5,a0
             vazoes[j] = 0;
  20c:	0007a023          	sw	zero,0(a5)
-        for (int j = 0; j < 120; j++){
+        for (int j = 0; j < 300; j++){
  210:	0791                	add	a5,a5,4
  212:	fef71de3          	bne	a4,a5,20c <main+0x198>
         int segundo_atual = 0;
@@ -453,7 +453,7 @@ int main(){
  32c:	6a0a8a9b          	addw	s5,s5,1696 # 186a0 <base+0x17680>
  330:	02facabb          	divw	s5,s5,a5
         int eficiencia_fim = res;
-        printf("eficiencia normalizada: %de-05\n", eficiencia_fim);
+        printf("eficiencia: %de-05\n", eficiencia_fim);
  334:	000a859b          	sext.w	a1,s5
  338:	00001517          	auipc	a0,0x1
  33c:	a7050513          	add	a0,a0,-1424 # da8 <malloc+0x190>
@@ -511,10 +511,10 @@ int main(){
  384:	6a0c8c9b          	addw	s9,s9,1696 # 186a0 <base+0x17680>
  388:	02fcccbb          	divw	s9,s9,a5
         int overhead_fim = res;
-        printf("overhead final: %de-05\n", overhead_fim);
+        printf("overhead: %de-05\n", overhead_fim);
  38c:	000c859b          	sext.w	a1,s9
  390:	00001517          	auipc	a0,0x1
- 394:	a3850513          	add	a0,a0,-1480 # dc8 <malloc+0x1b0>
+ 394:	a3050513          	add	a0,a0,-1488 # dc0 <malloc+0x1a8>
  398:	7cc000ef          	jal	b64 <printf>
         free(overheads);
  39c:	8552                	mv	a0,s4
@@ -579,10 +579,10 @@ int main(){
  3f4:	02f4c4b3          	div	s1,s1,a5
         int justica_fim = res;
  3f8:	2481                	sext.w	s1,s1
-        printf("justica_fim: %de-05\n", justica_fim);
+        printf("justica : %de-05\n", justica_fim);
  3fa:	85a6                	mv	a1,s1
  3fc:	00001517          	auipc	a0,0x1
- 400:	9e450513          	add	a0,a0,-1564 # de0 <malloc+0x1c8>
+ 400:	9dc50513          	add	a0,a0,-1572 # dd8 <malloc+0x1c0>
  404:	760000ef          	jal	b64 <printf>
         free(justicas);
  408:	856a                	mv	a0,s10
@@ -597,7 +597,7 @@ int main(){
         printf("desempenho: %de-05\n", desempenho);
  418:	4025d59b          	sraw	a1,a1,0x2
  41c:	00001517          	auipc	a0,0x1
- 420:	9dc50513          	add	a0,a0,-1572 # df8 <malloc+0x1e0>
+ 420:	9d450513          	add	a0,a0,-1580 # df0 <malloc+0x1d8>
  424:	740000ef          	jal	b64 <printf>
     for (int i = 1; i <= 30; i++){
  428:	2d85                	addw	s11,s11,1
@@ -639,7 +639,7 @@ int main(){
  46c:	f5043783          	ld	a5,-176(s0)
  470:	40f505bb          	subw	a1,a0,a5
  474:	00001517          	auipc	a0,0x1
- 478:	99c50513          	add	a0,a0,-1636 # e10 <malloc+0x1f8>
+ 478:	99450513          	add	a0,a0,-1644 # e08 <malloc+0x1f0>
  47c:	6e8000ef          	jal	b64 <printf>
     return 0;
  480:	4501                	li	a0,0
@@ -1441,7 +1441,7 @@ printint(int fd, int xx, int base, int sgn)
     buf[i++] = digits[x % base];
  828:	2601                	sext.w	a2,a2
  82a:	00000517          	auipc	a0,0x0
- 82e:	61e50513          	add	a0,a0,1566 # e48 <digits>
+ 82e:	61650513          	add	a0,a0,1558 # e40 <digits>
  832:	883a                	mv	a6,a4
  834:	2705                	addw	a4,a4,1
  836:	02c5f7bb          	remuw	a5,a1,a2
@@ -1800,7 +1800,7 @@ vprintf(int fd, const char *fmt, va_list ap)
  abc:	4941                	li	s2,16
     putc(fd, digits[x >> (sizeof(uint64) * 8 - 4)]);
  abe:	00000b97          	auipc	s7,0x0
- ac2:	38ab8b93          	add	s7,s7,906 # e48 <digits>
+ ac2:	382b8b93          	add	s7,s7,898 # e40 <digits>
  ac6:	03c9d793          	srl	a5,s3,0x3c
  aca:	97de                	add	a5,a5,s7
  acc:	0007c583          	lbu	a1,0(a5)
@@ -1836,7 +1836,7 @@ vprintf(int fd, const char *fmt, va_list ap)
  b08:	bbd5                	j	8fc <vprintf+0x4c>
           s = "(null)";
  b0a:	00000917          	auipc	s2,0x0
- b0e:	33690913          	add	s2,s2,822 # e40 <malloc+0x228>
+ b0e:	32e90913          	add	s2,s2,814 # e38 <malloc+0x220>
         for(; *s; s++)
  b12:	02800593          	li	a1,40
  b16:	b7c5                	j	af6 <vprintf+0x246>
