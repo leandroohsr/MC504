@@ -457,35 +457,6 @@ sys_uptime_nolock(void)
 }
 
 
-//SCHEDULER FROM BEFORE, TO CHECK IT IF NECESSARY
-//     for(p = proc; p < &proc[NPROC]; p++) {
-//       acquire(&p->lock);
-//       if(p->state == RUNNABLE) {
-//         if (p->type == CPU_BOUND && !cpu_proc){
-//           cpu_proc = p;
-//         } else if (p-> type == IO_BOUND && !io_proc) {
-//           io_proc = p;
-//         } else if (p->type == DEFAULT && !default_proc){
-//           default_proc = p;
-//         }
-//         uint tempo_inicio = sys_uptime_nolock();
-//         // Switch to chosen process.  It is the process's job
-//         // to release its lock and then reacquire it
-//         // before jumping back to us.
-//         p->state = RUNNING;
-//         c->proc = p;
-//         swtch(&c->context, &p->context);
-
-//         uint tempo_final = sys_uptime_nolock();
-//         p->tempo_total += tempo_final - tempo_inicio;
-//         // Process is done running for now.
-//         // It should have changed its p->state before coming back.
-//         c->proc = 0;
-//         found = 1;
-//       }
-//       release(&p->lock);
-//     }
-
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
 // Scheduler never returns.  It loops, doing:
