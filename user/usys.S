@@ -145,3 +145,8 @@ uptime_nolock:
  li a7, SYS_uptime_nolock
  ecall
  ret
+.global set_type
+set_type:
+ li a7, SYS_set_type
+ ecall
+ ret

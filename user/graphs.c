@@ -40,6 +40,9 @@ void generate_random_edge(int **matrix, int num_vertices, int *vert1, int *vert2
 
 
 int main(int agrc, char *argv[]){
+    int pid = getpid();
+
+    set_type(CPU_BOUND, pid);
 
     int index = 0;
     index += (argv[1][0] - '0') * 10;
@@ -146,7 +149,7 @@ int main(int agrc, char *argv[]){
     increment_metric(index, -1, MODE_EFICIENCIA);
     increment_metric(index, tempo_overhead, MODE_OVERHEAD);
 
-    int pid = getpid();
+    pid = getpid();
     set_justica(index, pid);
 
     return 0;

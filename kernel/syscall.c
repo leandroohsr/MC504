@@ -109,6 +109,7 @@ extern uint64 sys_initialize_metrics(void);
 extern uint64 sys_get_justica(void);
 extern uint64 sys_set_justica(void);
 extern uint64 sys_uptime_nolock(void);
+extern uint64 sys_set_type(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -141,7 +142,8 @@ static uint64 (*syscalls[])(void) = {
 [SYS_initialize_metrics] sys_initialize_metrics,
 [SYS_get_justica] sys_get_justica,
 [SYS_set_justica] sys_set_justica,
-[SYS_uptime_nolock] sys_uptime_nolock
+[SYS_uptime_nolock] sys_uptime_nolock,
+[SYS_set_type] sys_set_type
 };
 
 void

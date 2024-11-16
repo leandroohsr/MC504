@@ -29,6 +29,11 @@ rand(void)
 }
 
 int main(int agrc, char *argv[]){
+    int pid = getpid();
+
+    set_type(IO_BOUND, pid);
+
+
     int t0, t1;
     int total_eficiencia = 0, total_overhead = 0;
 
@@ -42,7 +47,7 @@ int main(int agrc, char *argv[]){
     char pid_str[10];
     char *suffix = ".txt";
 
-    int pid = getpid();
+    pid = getpid();
 
     pid += 1000; //valores baixos dão problema
 

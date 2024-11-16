@@ -35,14 +35,12 @@ int main(){
     //30 rodadas
     int  t0_rodada, tempo_atual, t0_total = uptime_nolock();
     char *args[2];
-    int *processos = malloc(20 * sizeof(int));
 
     for (int i = 1; i <= 30; i++){
         initialize_metrics();
         t0_rodada = uptime_nolock();
         uint X = (rand() % 9) + 6;
         uint Y = 20 - X;
-        //int processos[20];
         int pid;
         int ret;
         for (int j = 1; j < 21; j++){
@@ -71,7 +69,7 @@ int main(){
                         exit(1);
                     }
                 } else {       //pai
-                    processos[j-1] = pid;
+                    set_type(CPU_BOUND, pid);
                 }
             } else {
                 //IO-BOUND
@@ -84,7 +82,7 @@ int main(){
                         exit(1);
                     }
                 } else {       //pai
-                    processos[j-1] = pid;
+                    set_type(IO_BOUND, pid);
                 }
             }
         }
@@ -132,8 +130,8 @@ int main(){
 
         //pegando max e min
         int lim = segundo_atual;
-        int vazao_max = -10;
-        int vazao_min = 10000;
+        long long vazao_max = -10;
+        long long vazao_min = 10000;
         for (int j = 0; j <= lim; j++){
             if (vazoes[j] < vazao_min) {
                 vazao_min = vazoes[j];
@@ -144,15 +142,15 @@ int main(){
         }
 
         //normalizando
-        int vazao_media = (20 * 100000) / lim;
+        long long vazao_media = (20 * 100000) / lim;
         vazao_max *= 100000;
         vazao_min *= 100000;
 
-        int nominador = vazao_media - vazao_min;
-        int denominador = vazao_max - vazao_min; //é possível, por azar, isso ser zero
+        long long nominador = vazao_media - vazao_min;
+        long long denominador = vazao_max - vazao_min; //é possível, por azar, isso ser zero
 
         long long res = 100000 - (nominador * 100000 / denominador);
-        int vazao_norm = res % 100000;
+        int vazao_norm = res;
         printf("vazao normalizada: %de-05\n", vazao_norm);
 
         free(terminos);

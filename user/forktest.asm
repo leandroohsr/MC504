@@ -45,7 +45,7 @@ forktest(void)
 
   print("fork test\n");
   32:	00000517          	auipc	a0,0x0
-  36:	3f650513          	add	a0,a0,1014 # 428 <uptime_nolock+0x8>
+  36:	3fe50513          	add	a0,a0,1022 # 430 <set_type+0x8>
   3a:	fc7ff0ef          	jal	0 <print>
 
   for(n=0; n<N; n++){
@@ -67,7 +67,7 @@ forktest(void)
   if(n == N){
     print("fork claimed to work N times!\n");
   54:	00000517          	auipc	a0,0x0
-  58:	3e450513          	add	a0,a0,996 # 438 <uptime_nolock+0x18>
+  58:	3ec50513          	add	a0,a0,1004 # 440 <set_type+0x18>
   5c:	fa5ff0ef          	jal	0 <print>
     exit(1);
   60:	4505                	li	a0,1
@@ -104,7 +104,7 @@ forktest(void)
 
   print("fork test OK\n");
   90:	00000517          	auipc	a0,0x0
-  94:	3f850513          	add	a0,a0,1016 # 488 <uptime_nolock+0x68>
+  94:	40050513          	add	a0,a0,1024 # 490 <set_type+0x68>
   98:	f69ff0ef          	jal	0 <print>
 }
   9c:	60e2                	ld	ra,24(sp)
@@ -115,14 +115,14 @@ forktest(void)
   a6:	8082                	ret
       print("wait stopped early\n");
   a8:	00000517          	auipc	a0,0x0
-  ac:	3b050513          	add	a0,a0,944 # 458 <uptime_nolock+0x38>
+  ac:	3b850513          	add	a0,a0,952 # 460 <set_type+0x38>
   b0:	f51ff0ef          	jal	0 <print>
       exit(1);
   b4:	4505                	li	a0,1
   b6:	292000ef          	jal	348 <exit>
     print("wait got too many\n");
   ba:	00000517          	auipc	a0,0x0
-  be:	3b650513          	add	a0,a0,950 # 470 <uptime_nolock+0x50>
+  be:	3be50513          	add	a0,a0,958 # 478 <set_type+0x50>
   c2:	f3fff0ef          	jal	0 <print>
     exit(1);
   c6:	4505                	li	a0,1
@@ -865,3 +865,13 @@ uptime_nolock:
  422:	00000073          	ecall
  ret
  426:	8082                	ret
+
+0000000000000428 <set_type>:
+.global set_type
+set_type:
+ li a7, SYS_set_type
+ 428:	48f9                	li	a7,30
+ ecall
+ 42a:	00000073          	ecall
+ ret
+ 42e:	8082                	ret
